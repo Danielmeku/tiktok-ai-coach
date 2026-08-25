@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
+  let handle = ''
+  
   try {
-    const { handle } = await request.json()
+    const body = await request.json()
+    handle = body.handle || ''
 
     if (!handle) {
       return NextResponse.json({ error: 'Handle required' }, { status: 400 })
@@ -10,9 +13,9 @@ export async function POST(request: Request) {
 
     const cleanHandle = handle.replace('@', '')
 
-    // Check if RapidAPI credentials exist
+    // Fall back to mock data if API key is missing
     if (!process.env.RAPIDAPI_KEY) {
-      console.warn('RAPIDAPI_KEY is missing. Returning mock data.')
+      console.warn('RAPIDAPI_KEY missing. Returning mock data.')
       return NextResponse.json(getMockData(cleanHandle))
     }
 
@@ -28,13 +31,9 @@ export async function POST(request: Request) {
     )
 
     const data = await response.json()
-    console.log('RapidAPI response:', data)
-
-    // Fallback extraction handling different API structures
     const rawPosts = data?.data?.posts || data?.posts || data?.result || []
 
     if (!Array.isArray(rawPosts) || rawPosts.length === 0) {
-      // Return mock data if account is private or endpoint returned no posts
       return NextResponse.json(getMockData(cleanHandle))
     }
 
@@ -54,7 +53,6 @@ export async function POST(request: Request) {
   }
 }
 
-// Fallback Mock Data so your UI never stays blank during development
 function getMockData(handle: string) {
   return {
     success: true,
