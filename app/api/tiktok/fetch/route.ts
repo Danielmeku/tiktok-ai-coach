@@ -24,31 +24,45 @@ export async function POST(request: Request) {
       'x-rapidapi-host': 'tiktok-api23.p.rapidapi.com',
     }
 
-    // STEP 1: Get User Info to retrieve secUid
-    const userResponse = await fetch(
-      `https://tiktok-api23.p.rapidapi.com/api/user/info?uniqueId=${cleanHandle}`,
-      { method: 'GET', headers }
-    )
-
-    if (!userResponse.ok) {
-      const errText = await userResponse.text()
-      return NextResponse.json({ 
-        error: `User lookup failed (${userResponse.status}): ${errText}` 
-      }, { status: userResponse.status })
+    // Helper to safely parse JSON responses
+    const fetchJsonSafely = async (url: string) => {
+      const res = await fetch(url, { method: 'GET', headers })
+      const text = await res.text()
+      try {
+        return { ok: res.ok, status: res.status, data: JSON.parse(text) }
+      } catch {
+        return { ok: false, status: res.status, rawText: text }
+      }
     }
 
-    const userData = await userResponse.json()
+    // STEP 1: Look up user info to get secUid
+    const userResult = await fetchJsonSafely(
+      `https://tiktok-api23.p.rapidapi.com/api/user/info?uniqueId=${cleanHandle}`
+    )
+
+    if (!userResult.ok) {
+      return NextResponse.json({ 
+        error: `User info fetch failed (${userResult.status}): ${userResult.rawText || 'Empty/Invalid JSON from API'}` 
+      }, { status: userResult.status || 500 })
+    }
+
+    const userData = userResult.data
     const secUid = userData?.userInfo?.user?.secUid || userData?.user?.secUid
 
-    // STEP 2: Fetch Posts using secUid if available, else fallback to uniqueId
+    // STEP 2: Fetch Posts using secUid if available, else uniqueId
     const postsUrl = secUid
       ? `https://tiktok-api23.p.rapidapi.com/api/user/posts?secUid=${encodeURIComponent(secUid)}&count=10&cursor=0`
       : `https://tiktok-api23.p.rapidapi.com/api/user/posts?uniqueId=${cleanHandle}&count=10&cursor=0`
 
-    const postsResponse = await fetch(postsUrl, { method: 'GET', headers })
-    const postsData = await postsResponse.json()
+    const postsResult = await fetchJsonSafely(postsUrl)
 
-    // Parse items from multiple possible response properties
+    if (!postsResult.ok) {
+      return NextResponse.json({ 
+        error: `Posts fetch failed (${postsResult.status}): ${postsResult.rawText || 'Empty/Invalid JSON from API'}` 
+      }, { status: postsResult.status || 500 })
+    }
+
+    const postsData = postsResult.data
     const itemList = postsData?.itemList || postsData?.data?.itemList || postsData?.posts || []
 
     if (!Array.isArray(itemList) || itemList.length === 0) {
