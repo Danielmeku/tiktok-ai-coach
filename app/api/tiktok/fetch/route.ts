@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     }
 
     const response = await fetch(
-      `https://${process.env.RAPIDAPI_HOST}/user/posts?unique_id=${cleanHandle}&count=10`,
+      `https://${process.env.RAPIDAPI_HOST}/user/posts?uniqueId=${cleanHandle}&count=10`,
       {
         method: 'GET',
         headers: {
