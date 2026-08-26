@@ -1,58 +1,45 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import AnalyticsView from '@/components/AnalyticsView';
-import { LayoutDashboard, BarChart3 } from 'lucide-react';
+import { useState } from "react";
+import AnalyticsView from "@/components/AnalyticsView";
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState<'videos' | 'analytics'>('videos');
-  const [videos, setVideos] = useState([]);
-
-  // Fetch videos from your API or Supabase here...
+  const [activeTab, setActiveTab] = useState<"videos" | "analytics">("analytics");
+  const [videos, setVideos] = useState<any[]>([]); // Your fetched video array
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 p-6">
-      {/* Header & Tab Navigator */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-gray-800 pb-4">
-        <div>
-          <h1 className="text-2xl font-bold">TikTok Analytics Dashboard</h1>
-          <p className="text-sm text-gray-400">Track video performance and audience metrics</p>
-        </div>
-
-        {/* Navigator Buttons */}
-        <div className="flex bg-gray-900 border border-gray-800 p-1 rounded-xl space-x-1">
-          <button
-            onClick={() => setActiveTab('videos')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeTab === 'videos'
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
-            }`}
-          >
-            <LayoutDashboard className="w-4 h-4" />
-            <span>Video List</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('analytics')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeTab === 'analytics'
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4" />
-            <span>Analytics Charts</span>
-          </button>
-        </div>
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
+      {/* Tab Navigation Buttons */}
+      <div className="flex border-b border-gray-200 dark:border-gray-800 gap-4">
+        <button
+          onClick={() => setActiveTab("analytics")}
+          className={`pb-3 font-semibold text-sm border-b-2 transition-colors ${
+            activeTab === "analytics"
+              ? "border-blue-600 text-blue-600 dark:text-blue-400"
+              : "border-transparent text-gray-500 hover:text-gray-800"
+          }`}
+        >
+          Analytics Charts
+        </button>
+        <button
+          onClick={() => setActiveTab("videos")}
+          className={`pb-3 font-semibold text-sm border-b-2 transition-colors ${
+            activeTab === "videos"
+              ? "border-blue-600 text-blue-600 dark:text-blue-400"
+              : "border-transparent text-gray-500 hover:text-gray-800"
+          }`}
+        >
+          All Videos
+        </button>
       </div>
 
       {/* Dynamic Tab Content */}
-      {activeTab === 'videos' ? (
-        <div>
-          {/* Your existing Video List / Table Component goes here */}
-        </div>
+      {activeTab === "analytics" ? (
+        <AnalyticsView videos={videos || []} />
       ) : (
-        <AnalyticsView videos={videos} />
+        <div>
+          {/* Your existing Video List / Cards go here */}
+        </div>
       )}
     </div>
   );
