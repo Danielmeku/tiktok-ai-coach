@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
 import {
+  ResponsiveContainer,
   LineChart,
   Line,
   BarChart,
@@ -11,203 +12,132 @@ import {
   Cell,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
+  CartesianGrid,
   Legend,
-  ResponsiveContainer,
-} from 'recharts';
+} from "recharts";
+import { BarChart2, LineChart as LineIcon, PieChart as PieIcon } from "lucide-react";
 
 interface VideoData {
   id: string;
   title: string;
-  created_at: string;
+  date: string;
   views: number;
   likes: number;
-  comments: number;
   shares: number;
+  comments: number;
 }
 
-const PIE_COLORS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B'];
+const COLORS = ["#3B82F6", "#EC4899", "#10B981", "#F59E0B", "#8B5CF6"];
 
 export default function AnalyticsView({ videos }: { videos: VideoData[] }) {
-  const [selectedVideoId, setSelectedVideoId] = useState<string>('all');
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('all');
+  const [activeTab, setActiveTab] = useState<"line" | "bar" | "pie">("line");
+  const [selectedVideoId, setSelectedVideoId] = useState<string>("all");
 
-  // 1. Filter videos by date & selected video
   const filteredVideos = useMemo(() => {
-    let result = [...videos];
+    if (selectedVideoId === "all") return videos;
+    return videos.filter((v) => v.id === selectedVideoId);
+  }, [videos, selectedVideoId]);
 
-    if (timeRange !== 'all') {
-      const days = timeRange === '7d' ? 7 : 30;
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - days);
-      result = result.filter((v) => new Date(v.created_at) >= cutoff);
-    }
-
-    if (selectedVideoId !== 'all') {
-      result = result.filter((v) => v.id === selectedVideoId);
-    }
-
-    return result.sort(
-      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-    );
-  }, [videos, timeRange, selectedVideoId]);
-
-  // 2. Format Line Chart Data (Performance over time)
-  const lineChartData = useMemo(() => {
-    return filteredVideos.map((v) => ({
-      date: new Date(v.created_at).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-      }),
-      title: v.title,
-      Views: v.views,
-      Likes: v.likes,
-    }));
-  }, [filteredVideos]);
-
-  // 3. Format Bar Chart Data (Comparison across videos)
-  const barChartData = useMemo(() => {
-    return filteredVideos.slice(0, 10).map((v) => ({
-      name: v.title.length > 15 ? `${v.title.substring(0, 15)}...` : v.title,
-      Likes: v.likes,
-      Comments: v.comments,
-      Shares: v.shares,
-    }));
-  }, [filteredVideos]);
-
-  // 4. Format Pie Chart Data (Engagement Distribution)
-  const pieChartData = useMemo(() => {
+  const pieData = useMemo(() => {
     const totalLikes = filteredVideos.reduce((acc, v) => acc + (v.likes || 0), 0);
-    const totalComments = filteredVideos.reduce((acc, v) => acc + (v.comments || 0), 0);
     const totalShares = filteredVideos.reduce((acc, v) => acc + (v.shares || 0), 0);
+    const totalComments = filteredVideos.reduce((acc, v) => acc + (v.comments || 0), 0);
 
     return [
-      { name: 'Likes', value: totalLikes },
-      { name: 'Comments', value: totalComments },
-      { name: 'Shares', value: totalShares },
-    ].filter((item) => item.value > 0);
+      { name: "Likes", value: totalLikes },
+      { name: "Shares", value: totalShares },
+      { name: "Comments", value: totalComments },
+    ];
   }, [filteredVideos]);
 
   return (
-    <div className="space-y-6">
-      {/* Filters Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between bg-gray-900 p-4 rounded-xl border border-gray-800">
-        {/* Time Range Filter */}
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-400">Time Window:</span>
-          {(['7d', '30d', 'all'] as const).map((range) => (
-            <button
-              key={range}
-              onClick={() => setTimeRange(range)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                timeRange === range
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-              }`}
-            >
-              {range === '7d' ? 'Last 7 Days' : range === '30d' ? 'Last 30 Days' : 'All Time'}
-            </button>
-          ))}
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-md border border-gray-200 dark:border-gray-800 space-y-6 my-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-gray-800">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Analytics Overview</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Performance metrics breakdown
+          </p>
         </div>
 
-        {/* Video Selector Dropdown */}
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-400">Video:</span>
+        <div className="flex items-center gap-3">
           <select
             value={selectedVideoId}
             onChange={(e) => setSelectedVideoId(e.target.value)}
-            className="bg-gray-800 text-gray-200 border border-gray-700 rounded-lg text-xs px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none"
           >
-            <option value="all">All Videos Aggregate</option>
-            {videos.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.title}
+            <option value="all">All Videos</option>
+            {videos.map((vid) => (
+              <option key={vid.id} value={vid.id}>
+                {vid.title.length > 20 ? vid.title.substring(0, 20) + "..." : vid.title}
               </option>
             ))}
           </select>
+
+          <div className="flex items-center bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
+            <button
+              onClick={() => setActiveTab("line")}
+              className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === "line" ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm" : "text-gray-500"
+              }`}
+            >
+              <LineIcon className="w-4 h-4 inline mr-1" /> Trend
+            </button>
+            <button
+              onClick={() => setActiveTab("bar")}
+              className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === "bar" ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm" : "text-gray-500"
+              }`}
+            >
+              <BarChart2 className="w-4 h-4 inline mr-1" /> Bar
+            </button>
+            <button
+              onClick={() => setActiveTab("pie")}
+              className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === "pie" ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm" : "text-gray-500"
+              }`}
+            >
+              <PieIcon className="w-4 h-4 inline mr-1" /> Pie
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Grid of Graphs */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Line Chart: Views & Likes Over Time */}
-        <div className="bg-gray-900 border border-gray-800 p-5 rounded-xl">
-          <h3 className="text-lg font-semibold text-gray-100 mb-4">Views & Likes Trend</h3>
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={lineChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="date" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151' }}
-                />
-                <Legend />
-                <Line type="monotone" dataKey="Views" stroke="#3B82F6" strokeWidth={2} />
-                <Line type="monotone" dataKey="Likes" stroke="#EF4444" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Pie Chart: Engagement Distribution */}
-        <div className="bg-gray-900 border border-gray-800 p-5 rounded-xl">
-          <h3 className="text-lg font-semibold text-gray-100 mb-4">Engagement Distribution</h3>
-          <div className="h-72 w-full">
-            {pieChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieChartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={90}
-                    paddingAngle={5}
-                    dataKey="value"
-                    label
-                  >
-                    {pieChartData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151' }}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-gray-500">
-                No engagement data for selected filters.
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Bar Chart: Video Interaction Comparison */}
-        <div className="bg-gray-900 border border-gray-800 p-5 rounded-xl lg:col-span-2">
-          <h3 className="text-lg font-semibold text-gray-100 mb-4">
-            Interaction Breakdown per Video
-          </h3>
-          <div className="h-80 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={barChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151' }}
-                />
-                <Legend />
-                <Bar dataKey="Likes" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Comments" fill="#10B981" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Shares" fill="#F59E0B" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+      <div className="h-72 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          {activeTab === "line" ? (
+            <LineChart data={filteredVideos}>
+              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+              <XAxis dataKey="date" fontSize={12} />
+              <YAxis fontSize={12} />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="views" stroke="#3B82F6" strokeWidth={3} name="Views" />
+              <Line type="monotone" dataKey="likes" stroke="#EC4899" strokeWidth={2} name="Likes" />
+            </LineChart>
+          ) : activeTab === "bar" ? (
+            <BarChart data={filteredVideos}>
+              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+              <XAxis dataKey="title" fontSize={12} tickFormatter={(v) => v.substring(0, 8) + "..."} />
+              <YAxis fontSize={12} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="views" fill="#3B82F6" radius={[4, 4, 0, 0]} name="Views" />
+              <Bar dataKey="likes" fill="#EC4899" radius={[4, 4, 0, 0]} name="Likes" />
+            </BarChart>
+          ) : (
+            <PieChart>
+              <Pie data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={90} dataKey="value" label>
+                {pieData.map((_, i) => (
+                  <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          )}
+        </ResponsiveContainer>
       </div>
     </div>
   );
