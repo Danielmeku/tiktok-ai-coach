@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useMemo, useState } from "react";
@@ -24,7 +23,7 @@ import {
 } from "lucide-react";
 
 interface VideoData {
-  id: string;
+  id?: string;
 
   title?: string;
   desc?: string;
@@ -32,23 +31,23 @@ interface VideoData {
   date?: string;
   created_at?: string;
 
-  views?: number;
-  playCount?: number;
-  viewCount?: number;
-  view_count?: number;
+  views?: number | string;
+  playCount?: number | string;
+  viewCount?: number | string;
+  view_count?: number | string;
 
-  likes?: number;
-  diggCount?: number;
-  likeCount?: number;
-  like_count?: number;
+  likes?: number | string;
+  diggCount?: number | string;
+  likeCount?: number | string;
+  like_count?: number | string;
 
-  shares?: number;
-  shareCount?: number;
-  share_count?: number;
+  shares?: number | string;
+  shareCount?: number | string;
+  share_count?: number | string;
 
-  comments?: number;
-  commentCount?: number;
-  comment_count?: number;
+  comments?: number | string;
+  commentCount?: number | string;
+  comment_count?: number | string;
 }
 
 interface NormalizedVideo {
@@ -59,6 +58,11 @@ interface NormalizedVideo {
   likes: number;
   shares: number;
   comments: number;
+}
+
+interface PieDataItem {
+  name: string;
+  value: number;
 }
 
 const COLORS = [
@@ -73,64 +77,65 @@ export default function AnalyticsView({
 }: {
   videos?: VideoData[];
 }) {
-  const [activeTab, setActiveTab] = useState<"line" | "bar" | "pie">(
-    "line"
-  );
+  const [activeTab, setActiveTab] =
+    useState<"line" | "bar" | "pie">("line");
 
   const [selectedVideoId, setSelectedVideoId] =
     useState<string>("all");
 
   /*
-   * Normalize different API response formats
+   * Normalize API data
    */
   const normalizedVideos = useMemo<NormalizedVideo[]>(() => {
-    return (videos || []).map((video, index) => ({
-      id: video.id || `video-${index}`,
+    return (videos || []).map((video, index) => {
+      return {
+        id: String(video.id ?? `video-${index}`),
 
-      title:
-        video.title ||
-        video.desc ||
-        `Video #${index + 1}`,
+        title:
+          video.title ||
+          video.desc ||
+          `Video #${index + 1}`,
 
-      date:
-        video.date ||
-        video.created_at ||
-        `Video ${index + 1}`,
+        date:
+          video.date ||
+          video.created_at ||
+          `Video ${index + 1}`,
 
-      views: Number(
-        video.views ??
-          video.playCount ??
-          video.viewCount ??
-          video.view_count ??
-          0
-      ),
+        views: Number(
+          video.views ??
+            video.playCount ??
+            video.viewCount ??
+            video.view_count ??
+            0
+        ),
 
-      likes: Number(
-        video.likes ??
-          video.diggCount ??
-          video.likeCount ??
-          video.like_count ??
-          0
-      ),
+        likes: Number(
+          video.likes ??
+            video.diggCount ??
+            video.likeCount ??
+            video.like_count ??
+            0
+        ),
 
-      shares: Number(
-        video.shares ??
-          video.shareCount ??
-          video.share_count ??
-          0
-      ),
+        shares: Number(
+          video.shares ??
+            video.shareCount ??
+            video.share_count ??
+            0
+        ),
 
-      comments: Number(
-        video.comments ??
-          video.commentCount ??
-          video.comment_count ??
-          0
-      ),
-    }));
+        comments: Number(
+          video.comments ??
+            video.commentCount ??
+            video.comment_count ??
+            0
+        ),
+      };
+    });
   }, [videos]);
 
   /*
-   * Filter selected video
+   * Selected videos
    */
   const filteredVideos = useMemo(() => {
     if (selectedVideoId === "all") {
@@ -145,24 +150,24 @@ export default function AnalyticsView({
   /*
    * Pie chart data
    */
-  const pieData = useMemo(() => {
+  const pieData = useMemo<PieDataItem[]>(() => {
     const totalViews = filteredVideos.reduce(
-      (sum, video) => sum + video.views,
+      (total, video) => total + video.views,
       0
     );
 
     const totalLikes = filteredVideos.reduce(
-      (sum, video) => sum + video.likes,
+      (total, video) => total + video.likes,
       0
     );
 
     const totalShares = filteredVideos.reduce(
-      (sum, video) => sum + video.shares,
+      (total, video) => total + video.shares,
       0
     );
 
     const totalComments = filteredVideos.reduce(
-      (sum, video) => sum + video.comments,
+      (total, video) => total + video.comments,
       0
     );
 
@@ -187,20 +192,30 @@ export default function AnalyticsView({
   }, [filteredVideos]);
 
   /*
-   * Debug information
-   *
-   * Open browser console to see whether
-   * your API is actually providing data.
+   * Totals
    */
-  console.log("Analytics videos:", videos);
-  console.log("Normalized videos:", normalizedVideos);
-  console.log("Filtered videos:", filteredVideos);
+  const totals = useMemo(() => {
+    return filteredVideos.reduce(
+      (total, video) => ({
+        views: total.views + video.views,
+        likes: total.likes + video.likes,
+        shares: total.shares + video.shares,
+        comments: total.comments + video.comments,
+      }),
+      {
+        views: 0,
+        likes: 0,
+        shares: 0,
+        comments: 0,
+      }
+    );
+  }, [filteredVideos]);
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-md border border-gray-200 dark:border-gray-800 space-y-6 my-6">
 
-      {/* ================= HEADER ================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-gray-800">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-gray-800">
 
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -212,7 +227,7 @@ export default function AnalyticsView({
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
 
           {/* Video selector */}
           <select
@@ -232,51 +247,48 @@ export default function AnalyticsView({
                 value={video.id}
               >
                 {video.title.length > 30
-                  ? video.title.substring(0, 30) + "..."
+                  ? `${video.title.substring(0, 30)}...`
                   : video.title}
               </option>
             ))}
           </select>
 
-          {/* Chart type buttons */}
+          {/* Chart controls */}
           <div className="flex items-center bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
 
-            {/* Line */}
             <button
               type="button"
               onClick={() => setActiveTab("line")}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
                 activeTab === "line"
                   ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700"
+                  : "text-gray-500 dark:text-gray-400"
               }`}
             >
               <LineIcon className="w-4 h-4 inline mr-1" />
               Trend
             </button>
 
-            {/* Bar */}
             <button
               type="button"
               onClick={() => setActiveTab("bar")}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
                 activeTab === "bar"
                   ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700"
+                  : "text-gray-500 dark:text-gray-400"
               }`}
             >
               <BarChart2 className="w-4 h-4 inline mr-1" />
               Bar
             </button>
 
-            {/* Pie */}
             <button
               type="button"
               onClick={() => setActiveTab("pie")}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
                 activeTab === "pie"
                   ? "bg-white dark:bg-gray-700 text-blue-600 shadow-sm"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700"
+                  : "text-gray-500 dark:text-gray-400"
               }`}
             >
               <PieIcon className="w-4 h-4 inline mr-1" />
@@ -287,15 +299,13 @@ export default function AnalyticsView({
         </div>
       </div>
 
-      {/* ================= CHART AREA ================= */}
-
+      {/* Chart */}
       <div
         className="w-full"
-        style={{ height: "360px" }}
+        style={{ height: 360 }}
       >
         {filteredVideos.length === 0 ? (
 
-          /* Empty state */
           <div className="h-full flex flex-col items-center justify-center text-gray-400">
 
             <BarChart2 className="w-10 h-10 mb-3 opacity-40" />
@@ -305,7 +315,7 @@ export default function AnalyticsView({
             </p>
 
             <p className="text-xs mt-1">
-              Make sure your API is returning video analytics data.
+              No analytics data was provided.
             </p>
 
           </div>
@@ -317,8 +327,7 @@ export default function AnalyticsView({
             height="100%"
           >
 
-            {/* ================= LINE CHART ================= */}
-
+            {/* LINE CHART */}
             {activeTab === "line" && (
               <LineChart
                 data={filteredVideos}
@@ -329,7 +338,6 @@ export default function AnalyticsView({
                   bottom: 10,
                 }}
               >
-
                 <CartesianGrid
                   strokeDasharray="3 3"
                   opacity={0.2}
@@ -338,12 +346,10 @@ export default function AnalyticsView({
                 <XAxis
                   dataKey="date"
                   fontSize={12}
-                  tick={{ fill: "#6B7280" }}
                 />
 
                 <YAxis
                   fontSize={12}
-                  tick={{ fill: "#6B7280" }}
                 />
 
                 <Tooltip />
@@ -355,8 +361,6 @@ export default function AnalyticsView({
                   dataKey="views"
                   stroke="#3B82F6"
                   strokeWidth={3}
-                  dot={{ r: 4 }}
-                  activeDot={{ r: 6 }}
                   name="Views"
                 />
 
@@ -365,7 +369,6 @@ export default function AnalyticsView({
                   dataKey="likes"
                   stroke="#EC4899"
                   strokeWidth={2}
-                  dot={{ r: 3 }}
                   name="Likes"
                 />
 
@@ -374,7 +377,6 @@ export default function AnalyticsView({
                   dataKey="shares"
                   stroke="#10B981"
                   strokeWidth={2}
-                  dot={{ r: 3 }}
                   name="Shares"
                 />
 
@@ -383,15 +385,12 @@ export default function AnalyticsView({
                   dataKey="comments"
                   stroke="#F59E0B"
                   strokeWidth={2}
-                  dot={{ r: 3 }}
                   name="Comments"
                 />
-
               </LineChart>
             )}
 
-            {/* ================= BAR CHART ================= */}
-
+            {/* BAR CHART */}
             {activeTab === "bar" && (
               <BarChart
                 data={filteredVideos}
@@ -399,10 +398,9 @@ export default function AnalyticsView({
                   top: 10,
                   right: 20,
                   left: 10,
-                  bottom: 50,
+                  bottom: 60,
                 }}
               >
-
                 <CartesianGrid
                   strokeDasharray="3 3"
                   opacity={0.2}
@@ -414,13 +412,11 @@ export default function AnalyticsView({
                   angle={-25}
                   textAnchor="end"
                   interval={0}
-                  tickFormatter={(value) => {
-                    if (!value) return "";
-
-                    return value.length > 15
-                      ? value.substring(0, 15) + "..."
-                      : value;
-                  }}
+                  tickFormatter={(value: string) =>
+                    value && value.length > 15
+                      ? `${value.substring(0, 15)}...`
+                      : value
+                  }
                 />
 
                 <YAxis
@@ -434,58 +430,42 @@ export default function AnalyticsView({
                 <Bar
                   dataKey="views"
                   fill="#3B82F6"
-                  radius={[4, 4, 0, 0]}
                   name="Views"
                 />
 
                 <Bar
                   dataKey="likes"
                   fill="#EC4899"
-                  radius={[4, 4, 0, 0]}
                   name="Likes"
                 />
 
                 <Bar
                   dataKey="shares"
                   fill="#10B981"
-                  radius={[4, 4, 0, 0]}
                   name="Shares"
                 />
 
                 <Bar
                   dataKey="comments"
                   fill="#F59E0B"
-                  radius={[4, 4, 0, 0]}
                   name="Comments"
                 />
-
               </BarChart>
             )}
 
-            {/* ================= PIE CHART ================= */}
-
+            {/* PIE CHART */}
             {activeTab === "pie" && (
               <PieChart>
-
                 <Pie
                   data={pieData}
                   cx="50%"
                   cy="45%"
-                  innerRadius={65}
-                  outerRadius={115}
+                  innerRadius={60}
+                  outerRadius={110}
                   paddingAngle={2}
                   dataKey="value"
                   nameKey="name"
-                  label={({ name, percent }) =>
-                    `${name} ${
-                      percent !== undefined
-                        ? (percent * 100).toFixed(1)
-                        : "0"
-                    }%`
-                  }
-                  labelLine
                 >
-
                   {pieData.map((entry, index) => (
                     <Cell
                       key={`cell-${entry.name}-${index}`}
@@ -494,13 +474,11 @@ export default function AnalyticsView({
                       }
                     />
                   ))}
-
                 </Pie>
 
                 <Tooltip />
 
                 <Legend />
-
               </PieChart>
             )}
 
@@ -508,10 +486,9 @@ export default function AnalyticsView({
         )}
       </div>
 
-      {/* ================= DATA SUMMARY ================= */}
-
+      {/* Summary Cards */}
       {filteredVideos.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
 
           <div className="bg-blue-50 dark:bg-blue-950/30 rounded-xl p-4">
             <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -519,12 +496,7 @@ export default function AnalyticsView({
             </p>
 
             <p className="text-lg font-bold text-blue-600">
-              {filteredVideos
-                .reduce(
-                  (sum, video) => sum + video.views,
-                  0
-                )
-                .toLocaleString()}
+              {totals.views.toLocaleString()}
             </p>
           </div>
 
@@ -534,12 +506,7 @@ export default function AnalyticsView({
             </p>
 
             <p className="text-lg font-bold text-pink-600">
-              {filteredVideos
-                .reduce(
-                  (sum, video) => sum + video.likes,
-                  0
-                )
-                .toLocaleString()}
+              {totals.likes.toLocaleString()}
             </p>
           </div>
 
@@ -549,12 +516,7 @@ export default function AnalyticsView({
             </p>
 
             <p className="text-lg font-bold text-green-600">
-              {filteredVideos
-                .reduce(
-                  (sum, video) => sum + video.shares,
-                  0
-                )
-                .toLocaleString()}
+              {totals.shares.toLocaleString()}
             </p>
           </div>
 
@@ -564,12 +526,7 @@ export default function AnalyticsView({
             </p>
 
             <p className="text-lg font-bold text-orange-600">
-              {filteredVideos
-                .reduce(
-                  (sum, video) => sum + video.comments,
-                  0
-                )
-                .toLocaleString()}
+              {totals.comments.toLocaleString()}
             </p>
           </div>
 
