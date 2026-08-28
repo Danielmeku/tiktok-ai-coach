@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -24,27 +24,21 @@ import {
 
 interface VideoData {
   id?: string;
-
   title?: string;
   desc?: string;
-
   date?: string;
   created_at?: string;
-
   views?: number | string;
   playCount?: number | string;
   viewCount?: number | string;
   view_count?: number | string;
-
   likes?: number | string;
   diggCount?: number | string;
   likeCount?: number | string;
   like_count?: number | string;
-
   shares?: number | string;
   shareCount?: number | string;
   share_count?: number | string;
-
   comments?: number | string;
   commentCount?: number | string;
   comment_count?: number | string;
@@ -77,11 +71,14 @@ export default function AnalyticsView({
 }: {
   videos?: VideoData[];
 }) {
-  const [activeTab, setActiveTab] =
-    useState<"line" | "bar" | "pie">("line");
+  const [activeTab, setActiveTab] = useState<"line" | "bar" | "pie">("line");
+  const [selectedVideoId, setSelectedVideoId] = useState<string>("all");
+  const [mounted, setMounted] = useState<boolean>(false);
 
-  const [selectedVideoId, setSelectedVideoId] =
-    useState<string>("all");
+  // Ensures charts render only on client side where DOM container dimensions exist
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   /*
    * Normalize API data
@@ -301,7 +298,7 @@ export default function AnalyticsView({
 
       {/* Chart */}
       <div
-        className="w-full"
+        className="w-full min-h-[360px]"
         style={{ height: 360 }}
       >
         {filteredVideos.length === 0 ? (
@@ -320,11 +317,17 @@ export default function AnalyticsView({
 
           </div>
 
+        ) : !mounted ? (
+
+          <div className="h-full w-full bg-gray-50 dark:bg-gray-800/50 rounded-xl animate-pulse" />
+
         ) : (
 
           <ResponsiveContainer
             width="100%"
             height="100%"
+            minWidth={100}
+            minHeight={300}
           >
 
             {/* LINE CHART */}
