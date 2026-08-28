@@ -1,4 +1,4 @@
-```tsx
+
 "use client";
 
 import React, { useMemo, useState } from "react";
@@ -579,4 +579,3 @@ export default function AnalyticsView({
     </div>
   );
 }
-```
