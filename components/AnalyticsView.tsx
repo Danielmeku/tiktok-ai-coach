@@ -329,9 +329,7 @@ export default function AnalyticsView({
             minWidth={100}
             minHeight={300}
           >
-
-            {/* LINE CHART */}
-            {activeTab === "line" && (
+            {activeTab === "line" ? (
               <LineChart
                 data={filteredVideos}
                 margin={{
@@ -391,10 +389,7 @@ export default function AnalyticsView({
                   name="Comments"
                 />
               </LineChart>
-            )}
-
-            {/* BAR CHART */}
-            {activeTab === "bar" && (
+            ) : activeTab === "bar" ? (
               <BarChart
                 data={filteredVideos}
                 margin={{
@@ -454,10 +449,7 @@ export default function AnalyticsView({
                   name="Comments"
                 />
               </BarChart>
-            )}
-
-            {/* PIE CHART */}
-            {activeTab === "pie" && (
+            ) : (
               <PieChart>
                 <Pie
                   data={pieData}
@@ -484,7 +476,6 @@ export default function AnalyticsView({
                 <Legend />
               </PieChart>
             )}
-
           </ResponsiveContainer>
         )}
       </div>
