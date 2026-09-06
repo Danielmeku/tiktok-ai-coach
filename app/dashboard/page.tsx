@@ -30,7 +30,6 @@ export default function DashboardPage() {
         throw new Error(data.error || data.message || "Failed to fetch metrics");
       }
 
-      // Populate state so AnalyticsView receives the data
       setVideos(data.metrics || []);
     } catch (err: any) {
       setError(err.message);
@@ -90,14 +89,14 @@ export default function DashboardPage() {
         <AnalyticsView videos={videos} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {videos.map((vid) => (
-            <div key={vid.id} className="p-4 border dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 shadow-sm">
-              <p className="font-medium text-sm line-clamp-2">{vid.title}</p>
+          {videos.map((vid, index) => (
+            <div key={vid.id || index} className="p-4 border dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 shadow-sm">
+              <p className="font-medium text-sm line-clamp-2">{vid.title || "Untitled"}</p>
               <div className="mt-4 flex justify-between text-xs text-gray-500">
-                <span>👁️ {vid.views.toLocaleString()}</span>
-                <span>❤️ {vid.likes.toLocaleString()}</span>
-                <span>💬 {vid.comments.toLocaleString()}</span>
-                <span>🔁 {vid.shares.toLocaleString()}</span>
+                <span>👁️ {(vid.playCount ?? vid.views ?? 0).toLocaleString()}</span>
+                <span>❤️ {(vid.diggCount ?? vid.likes ?? 0).toLocaleString()}</span>
+                <span>💬 {(vid.commentCount ?? vid.comments ?? 0).toLocaleString()}</span>
+                <span>🔁 {(vid.shareCount ?? vid.shares ?? 0).toLocaleString()}</span>
               </div>
             </div>
           ))}
