@@ -9,37 +9,53 @@ export interface TikTokVideoMetric {
 }
 
 export async function fetchTikTokStats(handle: string): Promise<TikTokVideoMetric[]> {
-  // 1. Strip leading '@' symbol and whitespace to prevent API 404s
   const cleanHandle = handle.replace(/^@/, '').trim();
 
-  // 2. Updated host to match your active RapidAPI service
-  const host = process.env.RAPIDAPI_HOST || 'tiktok-api23.p.rapidapi.com';
-  
-  // 3. Updated endpoint & query param key ('uniqueId') matching tiktok-api23
-  const url = `https://${host}/api/user/info?uniqueId=${encodeURIComponent(cleanHandle)}`;
-
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'x-rapidapi-key': process.env.RAPIDAPI_KEY || '',
-      'x-rapidapi-host': host,
-    },
-    next: { revalidate: 3600 } // Cache results for 1 hour
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to fetch TikTok data (${response.status}): ${errorText || response.statusText}`);
+  if (!cleanHandle) {
+    throw new Error('A valid TikTok username is required');
   }
 
-  const rawData = await response.json();
+  const host = process.env.RAPIDAPI_HOST || 'tiktok-api23.p.rapidapi.com';
+  const apiKey = process.env.RAPIDAPI_KEY || '';
 
-  // 4. Safely extract video array across multiple common response structures
+  const headers = {
+    'x-rapidapi-key': apiKey,
+    'x-rapidapi-host': host,
+  };
+
+  // STEP 1: Fetch user info to extract secUid
+  const userUrl = `https://${host}/api/user/info?uniqueId=${encodeURIComponent(cleanHandle)}`;
+  const userRes = await fetch(userUrl, { method: 'GET', headers, next: { revalidate: 3600 } });
+
+  if (!userRes.ok) {
+    const errorText = await userRes.text();
+    throw new Error(`User lookup failed (${userRes.status}): ${errorText || userRes.statusText}`);
+  }
+
+  const userData = await userRes.json();
+  const secUid = userData?.userInfo?.user?.secUid || userData?.data?.user?.secUid;
+
+  if (!secUid) {
+    throw new Error(`Could not locate user profile details for "${cleanHandle}"`);
+  }
+
+  // STEP 2: Fetch user posts using the retrieved secUid
+  const postsUrl = `https://${host}/api/user/posts?secUid=${encodeURIComponent(secUid)}&count=35&cursor=0`;
+  const postsRes = await fetch(postsUrl, { method: 'GET', headers, next: { revalidate: 3600 } });
+
+  if (!postsRes.ok) {
+    const errorText = await postsRes.text();
+    throw new Error(`Posts lookup failed (${postsRes.status}): ${errorText || postsRes.statusText}`);
+  }
+
+  const postsData = await postsRes.json();
+
+  // Extract posts array safely across possible RapidAPI wrappers
   const posts = 
-    rawData?.data?.videos || 
-    rawData?.itemList || 
-    rawData?.data?.itemList || 
-    rawData?.user?.posts || 
+    postsData?.data?.itemList || 
+    postsData?.itemList || 
+    postsData?.data?.videos || 
+    postsData?.data || 
     [];
 
   return posts.map((item: any) => ({
