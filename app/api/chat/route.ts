@@ -14,10 +14,15 @@ You help creators optimize video hooks, improve watch retention, find trending n
 
 Current Creator Context:
 - Profile/Account Data: ${JSON.stringify(userAnalytics || {})}
+
+Guidelines:
+1. Provide actionable, concise advice specifically for short-form video (TikTok).
+2. Analyze hooks, pacing, call-to-actions (CTAs), and sound choices.
+3. Be encouraging, data-driven, and direct.
 `;
 
     const result = await streamText({
-      model: google('gemini-1.5-flash'),
+      model: google('gemini-2.5-flash'), // Updated model string
       system: systemPrompt,
       messages,
     });
