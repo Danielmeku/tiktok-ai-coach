@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import AnalyticsView from "@/components/AnalyticsView";
+import TikTokCoachChat from "@/components/TikTokCoachChat";
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState<"videos" | "analytics">("analytics");
+  const [activeTab, setActiveTab] = useState<"videos" | "analytics" | "coach">("analytics");
   const [videos, setVideos] = useState<any[]>([]);
   const [handle, setHandle] = useState("");
   const [loading, setLoading] = useState(false);
@@ -82,12 +83,22 @@ export default function DashboardPage() {
         >
           All Videos ({videos.length})
         </button>
+        <button
+          onClick={() => setActiveTab("coach")}
+          className={`pb-3 font-semibold text-sm border-b-2 transition-colors ${
+            activeTab === "coach"
+              ? "border-blue-600 text-blue-600 dark:text-blue-400"
+              : "border-transparent text-gray-500 hover:text-gray-800"
+          }`}
+        >
+          🤖 AI Coach
+        </button>
       </div>
 
       {/* Dynamic Tab Content */}
       {activeTab === "analytics" ? (
         <AnalyticsView videos={videos} />
-      ) : (
+      ) : activeTab === "videos" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {videos.map((vid, index) => (
             <div key={vid.id || index} className="p-4 border dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 shadow-sm">
@@ -100,6 +111,10 @@ export default function DashboardPage() {
               </div>
             </div>
           ))}
+        </div>
+      ) : (
+        <div className="flex justify-center">
+          <TikTokCoachChat userAnalytics={{ handle, videoCount: videos.length, videos }} />
         </div>
       )}
     </div>
