@@ -45,7 +45,7 @@ export default function DashboardPage() {
       <form onSubmit={fetchTikTokData} className="flex gap-3 max-w-md">
         <input
           type="text"
-          placeholder="Enter TikTok Handle (e.g. @username)"
+          placeholder="Enter TikTok Handle (e.g. username)"
           value={handle}
           onChange={(e) => setHandle(e.target.value)}
           className="flex-1 px-4 py-2 border rounded-xl dark:bg-gray-800 dark:border-gray-700 text-sm focus:outline-none"
