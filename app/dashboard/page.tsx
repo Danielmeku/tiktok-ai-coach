@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createBrowserClient } from "@supabase/ssr";
 import AnalyticsView from "@/components/AnalyticsView";
 import TikTokCoachChat from "@/components/TikTokCoachChat";
+import TermsModal from "@/components/TermsModal";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"videos" | "analytics" | "coach">("analytics");
@@ -10,6 +12,35 @@ export default function DashboardPage() {
   const [handle, setHandle] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showTermsModal, setShowTermsModal] = useState(false);
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+  useEffect(() => {
+    async function checkTerms() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user && !user.user_metadata?.has_accepted_terms) {
+        setShowTermsModal(true);
+      }
+    }
+    checkTerms();
+  }, [supabase]);
+
+  const handleAcceptTerms = async () => {
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        has_accepted_terms: true,
+        accepted_terms_at: new Date().toISOString(),
+      },
+    });
+
+    if (!error) {
+      setShowTermsModal(false);
+    }
+  };
 
   const fetchTikTokData = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +72,9 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
+      {/* First-Time User Terms Modal */}
+      {showTermsModal && <TermsModal onAccept={handleAcceptTerms} />}
+
       {/* Fetch Form */}
       <form onSubmit={fetchTikTokData} className="flex gap-3 max-w-md">
         <input
