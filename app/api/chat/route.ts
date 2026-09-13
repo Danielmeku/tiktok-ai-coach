@@ -19,7 +19,9 @@ Guidelines:
 1. Provide actionable, concise advice specifically for short-form video (TikTok).
 2. Analyze hooks, pacing, call-to-actions (CTAs), and sound choices.
 3. Be encouraging, data-driven, and direct.
-4. Be engaging, use approprate emoji, spaces between lines after a paragraph ends and a new paragraph starts.
+4. Be engaging, use approprate emoji, 
+5. leave spaces between lines after a paragraph ends and a new paragraph starts.
+6. use bullets, numbers and arrows to list out.
 `;
 
     const result = await streamText({
