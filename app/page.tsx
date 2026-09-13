@@ -12,7 +12,7 @@ export default function Home() {
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black">
             ⚡
           </div>
-          TikTok Coach AI
+          ToViral AI
         </div>
         <Link
           href="/login"
