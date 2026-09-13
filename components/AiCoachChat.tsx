@@ -1,4 +1,3 @@
-// components/TikTokCoachChat.tsx
 'use client';
 
 import { useChat } from 'ai/react';
@@ -21,7 +20,7 @@ export default function TikTokCoachChat({ userAnalytics }: TikTokCoachChatProps)
       <div className="flex-1 overflow-y-auto space-y-4 pr-2">
         {messages.length === 0 && (
           <div className="text-center text-muted-foreground my-auto pt-24">
-            <h3 className="font-bold text-lg text-foreground">👋 Welcome to TikTok Coach AI</h3>
+            <h3 className="font-bold text-lg text-foreground">👋 Welcome to ToViral AI Coach</h3>
             <p className="text-sm mt-1">Ask for hook ideas, profile audits, or content strategy recommendations!</p>
           </div>
         )}
