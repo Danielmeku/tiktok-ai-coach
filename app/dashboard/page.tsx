@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import AnalyticsView from "@/components/AnalyticsView";
-import TikTokCoachChat from "@/components/TikTokCoachChat";
+import TikTokCoachChat from "@/components/AiCoachChat";
 import TermsModal from "@/components/TermsModal";
 
 export default function DashboardPage() {
