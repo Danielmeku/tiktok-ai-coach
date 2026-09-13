@@ -107,7 +107,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/10 py-8 text-center text-xs text-gray-500 space-y-2">
-        <p>&copy; {new Date().getFullYear()} TikTok Coach AI. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} ToViral AI. All rights reserved.</p>
         <div className="flex justify-center gap-4 text-gray-400">
           <Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link>
           <span>&bull;</span>
