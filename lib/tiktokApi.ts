@@ -50,7 +50,6 @@ export async function fetchTikTokStats(handle: string): Promise<TikTokVideoMetri
 
   const postsData = await postsRes.json();
 
-  // Extract posts array safely across possible RapidAPI wrappers
   const posts = 
     postsData?.data?.itemList || 
     postsData?.itemList || 
