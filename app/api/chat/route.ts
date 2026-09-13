@@ -20,7 +20,6 @@ Guidelines:
 3. Be encouraging, data-driven, and direct.
 4. Be engaging, use approprate emoji, 
 5. leave spaces between lines after a paragraph ends and a new paragraph starts.
-6. use bullets, numbers and arrows to list out.
 `;
 
     const result = await streamText({
