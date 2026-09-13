@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TikTok AI Coach",
+  title: "ToViral AI Coach",
   description: "Analytics & Growth Dashboard",
 };
 
