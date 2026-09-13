@@ -21,14 +21,14 @@ async function handleTikTokFetch(handle: string | null) {
   }
 }
 
-// 1. GET Handler (for query params: ?handle=... or ?username=...)
+// 1. GET Handler (for query params: ?username=...)
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const handle = searchParams.get('handle') || searchParams.get('username');
   return handleTikTokFetch(handle);
 }
 
-// 2. POST Handler (for JSON body: { handle: "..." } or { username: "..." })
+// 2. POST Handler (for JSON body: { username: "..." })
 export async function POST(request: Request) {
   try {
     const body = await request.json();
