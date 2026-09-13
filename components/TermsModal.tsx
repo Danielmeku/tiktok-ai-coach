@@ -22,7 +22,7 @@ export default function TermsModal({ onAccept }: TermsModalProps) {
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white dark:bg-gray-900 border dark:border-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 text-center">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-          Welcome to TikTok Coach AI 👋
+          Welcome to ToViral AI Coach👋
         </h2>
         
         <p className="text-sm text-gray-600 dark:text-gray-300 text-left leading-relaxed">
