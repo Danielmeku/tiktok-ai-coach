@@ -22,7 +22,7 @@ Guidelines:
 `;
 
     const result = await streamText({
-      model: google('gemini-3.6-flash'), // Updated to latest active model
+      model: google('gemini-3.6-flash'),
       system: systemPrompt,
       messages,
     });
