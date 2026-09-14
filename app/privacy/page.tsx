@@ -22,7 +22,7 @@ export default function PrivacyPage() {
           className="text-sm font-semibold px-4 py-2 rounded-full border border-white/20 text-white hover:bg-white hover:text-black transition-all duration-200"
         >
         <Link
-          href="/"
+          href="/dashboard"
           className="text-xs font-semibold px-4 py-2 rounded-full border border-white/20 text-white hover:bg-white hover:text-black transition-all duration-200"
         >
           Back;
