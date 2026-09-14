@@ -8,12 +8,19 @@ export default function PrivacyPage() {
 
       {/* Navigation Header */}
       <header className="relative z-10 max-w-5xl w-full mx-auto px-6 py-6 flex items-center justify-between border-b border-white/10">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg tracking-tight text-white hover:text-blue-400 transition-colors">
-          <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">
-            ⚡
-          </div>
-          TikTok AI Coach
+        <Link href="/" className="flex items-center gap-3 font-bold text-white">
+          <Image
+            src="/logo.png"
+            alt="ToViral AI Logo"
+            width={100}
+            height={60}
+            className="rounded-lg object-contain"
+          />
         </Link>
+        <Link
+          href="/login"
+          className="text-sm font-semibold px-4 py-2 rounded-full border border-white/20 text-white hover:bg-white hover:text-black transition-all duration-200"
+        >
         <Link
           href="/"
           className="text-xs font-semibold px-4 py-2 rounded-full border border-white/20 text-white hover:bg-white hover:text-black transition-all duration-200"
