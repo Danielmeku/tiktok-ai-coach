@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Home() {
@@ -8,12 +9,16 @@ export default function Home() {
 
       {/* Navigation Bar */}
       <nav className="relative z-10 max-w-7xl w-full mx-auto px-6 py-6 flex items-center justify-between border-b border-white/10">
-        <div className="flex items-center gap-2 font-bold text-xl tracking-tight text-white">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black">
-            ⚡
-          </div>
-          ToViral AI
-        </div>
+        <Link href="/" className="flex items-center gap-3 font-bold text-white">
+          <Image
+            src="/logo.png"
+            alt="ToViral AI Logo"
+            width={32}
+            height={32}
+            className="rounded-lg object-contain"
+          />
+          <span>ToViral AI</span>
+        </Link>
         <Link
           href="/login"
           className="text-sm font-semibold px-4 py-2 rounded-full border border-white/20 text-white hover:bg-white hover:text-black transition-all duration-200"
