@@ -15,7 +15,7 @@ export default function PrivacyPage() {
           TikTok AI Coach
         </Link>
         <Link
-          href="/dashboard"
+          href="/"
           className="text-xs font-semibold px-4 py-2 rounded-full border border-white/20 text-white hover:bg-white hover:text-black transition-all duration-200"
         >
           Back to Dashboard &rarr;
