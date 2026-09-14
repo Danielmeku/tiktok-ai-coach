@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function PrivacyPage() {
   return (
@@ -17,10 +18,6 @@ export default function PrivacyPage() {
             className="rounded-lg object-contain"
           />
         </Link>
-        <Link
-          href="/login"
-          className="text-sm font-semibold px-4 py-2 rounded-full border border-white/20 text-white hover:bg-white hover:text-black transition-all duration-200"
-        >
         <Link
           href="/dashboard"
           className="text-xs font-semibold px-4 py-2 rounded-full border border-white/20 text-white hover:bg-white hover:text-black transition-all duration-200"
