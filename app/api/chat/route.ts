@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const { messages, userAnalytics } = await req.json();
 
     const systemPrompt = `
-You are TikTok Coach AI, an expert content strategist and viral growth coach.
+You are ToViral AI Coach, an expert content strategist and viral growth coach.
 You help creators optimize video hooks, improve watch retention, find trending niches, and improve engagement.
 
 Current Creator Context:
