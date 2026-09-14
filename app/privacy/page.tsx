@@ -8,7 +8,7 @@ export default function PrivacyPage() {
 
       {/* Navigation Header */}
       <header className="relative z-10 max-w-5xl w-full mx-auto px-6 py-6 flex items-center justify-between border-b border-white/10">
-        <Link href="/" className="flex items-center gap-3 font-bold text-white">
+        <Link href="/dashboard" className="flex items-center gap-3 font-bold text-white">
           <Image
             src="/logo.png"
             alt="ToViral AI Logo"
