@@ -13,11 +13,10 @@ export default function Home() {
           <Image
             src="/logo.png"
             alt="ToViral AI Logo"
-            width={32}
-            height={32}
+            width={100}
+            height={60}
             className="rounded-lg object-contain"
           />
-          <span>ToViral AI</span>
         </Link>
         <Link
           href="/login"
