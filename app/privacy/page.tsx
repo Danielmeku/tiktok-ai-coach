@@ -13,8 +13,8 @@ export default function PrivacyPage() {
           <Image
             src="/logo.png"
             alt="ToViral AI Logo"
-            width={100}
-            height={60}
+            width={200}
+            height={160}
             className="rounded-lg object-contain"
           />
         </Link>
